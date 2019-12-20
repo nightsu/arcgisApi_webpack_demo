@@ -4,39 +4,56 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import ArcGISMap from "esri/Map";
 import MapView from "esri/views/MapView";
 import Legend from "esri/widgets/Legend";
+import Locate from "esri/widgets/Locate";
 
 
 
 
 
-
-  var template = {
-    // autocasts as new PopupTemplate()
-    title: "{NAME} in {COUNTY}",
-    content: [
-      {
-        type: "fields",
-        fieldInfos: [
-          {
-            fieldName: "B12001_calc_pctMarriedE",
-            label: "Married %"
-          },
-          {
-            fieldName: "B12001_calc_numMarriedE",
-            label: "People Married"
-          },
-          {
-            fieldName: "B12001_calc_numNeverE",
-            label: "People that Never Married"
-          },
-          {
-            fieldName: "B12001_calc_numDivorcedE",
-            label: "People Divorced"
+var template = {
+  // autocasts as new PopupTemplate()
+  title: "{NAME} in {COUNTY}",
+  content: [
+    {
+      // It is also possible to set the fieldInfos outside of the content
+      // directly in the popupTemplate. If no fieldInfos is specifically set
+      // in the content, it defaults to whatever may be set within the popupTemplate.
+      type: "fields",
+      fieldInfos: [
+        {
+          fieldName: "B12001_calc_pctMarriedE",
+          label: "Married %"
+        },
+        {
+          fieldName: "B12001_calc_numMarriedE",
+          label: "People Married",
+          format: {
+            digitSeparator: true,
+            places: 0
           }
-        ]
-      }
-    ]
-  };
+        },
+        {
+          fieldName: "B12001_calc_numNeverE",
+          label: "People that Never Married",
+          format: {
+            digitSeparator: true,
+            places: 0
+          }
+        },
+        {
+          fieldName: "B12001_calc_numDivorcedE",
+          label: "People Divorced",
+          format: {
+            digitSeparator: true,
+            places: 0
+          }
+        }
+      ]
+    }
+  ]
+};
+
+
 
   var featureLayer = new FeatureLayer({
     url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/ACS_Marital_Status_Boundaries/FeatureServer/2",
@@ -64,5 +81,19 @@ import Legend from "esri/widgets/Legend";
     ymin: 4435053
   }
 });
-
-view.ui.add(new Legend({ view: view }), "bottom-left");
+var locateBtn = new Locate({
+  view: view
+});
+var legend = new Legend({
+  view: view,
+  layerInfos: [
+    {
+      layer: featureLayer,
+      title: "NY Educational Attainment"
+    }
+  ]
+});
+view.ui.add(locateBtn, {
+  position: "top-left"
+});
+view.ui.add(legend, {position:"bottom-right"});
